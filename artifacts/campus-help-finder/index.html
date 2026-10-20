@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f3ec" />
+    <title>Campus Help Finder</title>
+    <meta name="description" content="A clear, private-feeling starting point for finding free support on campus." />
+    <meta property="og:title" content="Campus Help Finder" />
+    <meta property="og:description" content="Find free support on campus, all in one place." />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        color-scheme: light;
+        --paper: #f5f3ec;
+        --surface: #fffefa;
+        --ink: #203637;
+        --muted: #607171;
+        --line: #dce2d9;
+        --teal: #17665e;
+        --teal-dark: #124d48;
+        --mint: #e5eee7;
+        --coral: #c66a4c;
+        --sun: #e9b75e;
+        --serif: Georgia, "Times New Roman", serif;
+        --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      [hidden] { display: none !important; }
+      html { min-width: 320px; scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        background:
+          radial-gradient(ellipse at 90% 5%, rgba(219, 231, 218, .58), transparent 28rem),
+          var(--paper);
+        color: var(--ink);
+        font-family: var(--sans);
+        -webkit-font-smoothing: antialiased;
+      }
+      button, input { font: inherit; }
+      a { color: inherit; }
+      .page { width: min(1120px, calc(100% - 56px)); margin: 0 auto; }
+      .topbar {
+        min-height: 76px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(32, 54, 55, .12);
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 11px;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: -.025em;
+        text-decoration: none;
+      }
+      .brand-mark {
+        display: grid;
+        width: 32px;
+        height: 32px;
+        place-items: center;
+        border-radius: 10px 10px 10px 3px;
+        color: #f7f4e9;
+        background: var(--teal);
+      }
+      .brand-mark svg { width: 17px; height: 17px; }
+      .top-note {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .02em;
+      }
+      .top-note::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        background: #6d9a79;
+        border-radius: 50%;
+      }
+      main { padding: 58px 0 72px; }
+      .intro {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 240px;
+        align-items: end;
+        gap: 48px;
+        margin-bottom: 40px;
+      }
+      .eyebrow {
+        margin: 0 0 14px;
+        color: var(--teal);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .16em;
+        text-transform: uppercase;
+      }
+      h1 {
+        max-width: 680px;
+        margin: 0;
+        font-family: var(--serif);
+        font-size: clamp(42px, 6.4vw, 72px);
+        font-weight: 500;
+        letter-spacing: -.055em;
+        line-height: .99;
+      }
+      h1 em { color: var(--teal); font-weight: 500; }
+      .intro-aside {
+        margin: 0 0 5px;
+        padding: 2px 0 2px 18px;
+        border-left: 2px solid var(--sun);
+        color: #526766;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+      .finder {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: end;
+        gap: 14px;
+        margin-bottom: 22px;
+      }
+      .search-wrap { position: relative; }
+      .search-label {
+        display: block;
+        margin: 0 0 9px 2px;
+        color: #536866;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .04em;
+      }
+      .search-box { position: relative; }
+      .search-icon {
+        position: absolute;
+        top: 50%;
+        left: 17px;
+        width: 19px;
+        height: 19px;
+        color: #627a74;
+        transform: translateY(-50%);
+        pointer-events: none;
+      }
+      #resource-search {
+        display: block;
+        width: 100%;
+        height: 56px;
+        padding: 0 52px;
+        border: 1px solid #cbd7ce;
+        border-radius: 12px;
+        outline: none;
+        background: rgba(255, 254, 250, .94);
+        box-shadow: 0 3px 12px rgba(34, 60, 55, .035);
+        color: var(--ink);
+        font-size: 15px;
+        transition: border-color .18s ease, box-shadow .18s ease;
+      }
+      #resource-search::placeholder { color: #879590; }
+      #resource-search:focus {
+        border-color: var(--teal);
+        box-shadow: 0 0 0 4px rgba(23, 102, 94, .12);
+      }
+      .clear-search {
+        position: absolute;
+        top: 50%;
+        right: 12px;
+        display: none;
+        width: 34px;
+        height: 34px;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: #58706b;
+        cursor: pointer;
+        transform: translateY(-50%);
+      }
+      .clear-search:hover { background: var(--mint); }
+      .clear-search.visible { display: grid; place-items: center; }
+      .resource-count {
+        min-width: 96px;
+        padding: 0 3px 15px 0;
+        color: #667572;
+        text-align: right;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .resource-count strong { color: var(--ink); font-weight: 700; }
+      .results-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 27px 0 14px;
+      }
+      .results-heading h2 {
+        margin: 0;
+        color: #4f6460;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+      }
+      .browse-note { color: #798783; font-size: 12px; }
+      .resource-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .resource-card {
+        position: relative;
+        display: flex;
+        min-height: 211px;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 22px 23px 19px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--surface);
+        box-shadow: 0 5px 16px rgba(32, 54, 55, .035);
+        animation: appear .32s both;
+        transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+      }
+      .resource-card:hover {
+        border-color: #b5cbc0;
+        box-shadow: 0 10px 26px rgba(32, 54, 55, .08);
+        transform: translateY(-2px);
+      }
+      .resource-card::after {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 46px;
+        height: 46px;
+        border-radius: 0 0 0 38px;
+        background: var(--card-wash, #e7f0e8);
+        content: "";
+      }
+      .resource-card:nth-child(3n + 2) { --card-wash: #f6eadb; }
+      .resource-card:nth-child(3n) { --card-wash: #e8e9df; }
+      .card-index {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 17px;
+        color: #71827d;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .1em;
+      }
+      .card-index::before {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--coral);
+        content: "";
+      }
+      .resource-card:nth-child(3n + 2) .card-index::before { background: #bf9140; }
+      .resource-card:nth-child(3n) .card-index::before { background: #6d8e72; }
+      .resource-card h3 {
+        margin: 0 0 8px;
+        font-family: var(--serif);
+        font-size: 23px;
+        font-weight: 500;
+        letter-spacing: -.025em;
+        line-height: 1.15;
+      }
+      .resource-card p {
+        margin: 0 0 19px;
+        color: #62716e;
+        font-size: 13px;
+        line-height: 1.55;
+      }
+      .learn-more {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: auto;
+        color: var(--teal);
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .learn-more svg { width: 14px; height: 14px; transition: transform .18s ease; }
+      .learn-more:hover { color: var(--teal-dark); }
+      .learn-more:hover svg { transform: translateX(3px); }
+      .learn-more:focus-visible, .clear-search:focus-visible {
+        outline: 3px solid rgba(23, 102, 94, .35);
+        outline-offset: 3px;
+      }
+      .no-results {
+        display: none;
+        padding: 45px 22px 48px;
+        border: 1px dashed #bdcec3;
+        border-radius: 14px;
+        background: rgba(255, 254, 250, .56);
+        text-align: center;
+      }
+      .no-results.visible { display: block; }
+      .no-results-mark {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        margin: 0 auto 14px;
+        place-items: center;
+        border-radius: 14px;
+        background: #e5eee7;
+        color: var(--teal);
+      }
+      .no-results h3 {
+        margin: 0 0 7px;
+        font-family: var(--serif);
+        font-size: 23px;
+        font-weight: 500;
+      }
+      .no-results p { margin: 0; color: #697a75; font-size: 13px; line-height: 1.55; }
+      .support-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        margin-top: 26px;
+        padding: 16px 18px;
+        border: 1px solid #d7e3d9;
+        border-radius: 12px;
+        background: #eaf0e8;
+        color: #526862;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+      .support-note svg { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 1px; color: var(--teal); }
+      .support-note strong { color: #334f49; }
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 20px 0 28px;
+        border-top: 1px solid rgba(32, 54, 55, .12);
+        color: #75817c;
+        font-size: 11px;
+      }
+      .footer span:last-child { text-align: right; }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      @keyframes appear { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+      @media (max-width: 800px) {
+        .intro { grid-template-columns: minmax(0, 1fr) 205px; gap: 28px; }
+        .resource-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      @media (max-width: 600px) {
+        .page { width: min(100% - 36px, 480px); }
+        .topbar { min-height: 66px; }
+        .top-note { font-size: 11px; }
+        main { padding: 42px 0 48px; }
+        .intro { display: block; margin-bottom: 29px; }
+        h1 { max-width: 420px; font-size: clamp(43px, 12vw, 58px); }
+        .intro-aside { max-width: 350px; margin-top: 19px; font-size: 13px; }
+        .finder { grid-template-columns: 1fr; gap: 9px; }
+        .resource-count { min-width: 0; padding: 0; text-align: left; }
+        .results-heading { margin-top: 25px; }
+        .browse-note { max-width: 135px; text-align: right; }
+        .resource-grid { grid-template-columns: 1fr; gap: 11px; }
+        .resource-card { min-height: 186px; padding: 20px 20px 18px; }
+        .card-index { margin-bottom: 13px; }
+        .resource-card h3 { font-size: 22px; }
+        .support-note { margin-top: 20px; padding: 14px; }
+        .footer { flex-direction: column; gap: 5px; }
+        .footer span:last-child { text-align: left; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Campus Help Finder home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 19V9.5L12 4l7 5.5V19h-5v-5h-4v5H5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 9h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          </span>
+          <span>Campus Help Finder</span>
+        </a>
+        <div class="top-note">Free support, all in one place</div>
+      </header>
+
+      <main>
+        <section class="intro" aria-labelledby="page-title">
+          <div>
+            <p class="eyebrow">A good place to start</p>
+            <h1 id="page-title">You don’t have to<br /><em>figure it out alone.</em></h1>
+          </div>
+          <p class="intro-aside">Find free, confidential support and practical help available to students on campus.</p>
+        </section>
+
+        <section aria-labelledby="resources-title">
+          <div class="finder">
+            <div class="search-wrap">
+              <label class="search-label" for="resource-search">What kind of support are you looking for?</label>
+              <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3" stroke="currentColor" stroke-width="1.8"/><path d="m15.5 15.5 4.1 4.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <input id="resource-search" type="search" placeholder="Try “food”, “tutoring”, or “housing”" autocomplete="off" aria-describedby="search-hint" />
+                <button class="clear-search" type="button" aria-label="Clear search">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                </button>
+              </div>
+              <span class="sr-only" id="search-hint">Results update as you type.</span>
+            </div>
+            <div class="resource-count" aria-live="polite" aria-atomic="true"><strong id="visible-count">6</strong> resources</div>
+          </div>
+
+          <div class="results-heading">
+            <h2 id="resources-title">Explore campus resources</h2>
+            <span class="browse-note">You can start with just one step.</span>
+          </div>
+
+          <div class="resource-grid" id="resource-grid">
+            <article class="resource-card" data-resource>
+              <span class="card-index">01 / EVERYDAY NEEDS</span>
+              <h3>Food Pantry</h3>
+              <p>Pick up free groceries and everyday essentials, with no judgment and no complicated steps.</p>
+              <a class="learn-more" href="#" aria-label="Learn more about Food Pantry">Learn more <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            </article>
+            <article class="resource-card" data-resource>
+              <span class="card-index">02 / WELLBEING</span>
+              <h3>Counseling Services</h3>
+              <p>Talk with a counselor for free, confidential support with stress, mental health, or whatever is weighing on you.</p>
+              <a class="learn-more" href="#" aria-label="Learn more about Counseling Services">Learn more <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            </article>
+            <article class="resource-card" data-resource>
+              <span class="card-index">03 / LEARNING</span>
+              <h3>Free Tutoring</h3>
+              <p>Get free one-on-one or small-group coursework help from people who know the material.</p>
+              <a class="learn-more" href="#" aria-label="Learn more about Free Tutoring">Learn more <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            </article>
+            <article class="resource-card" data-resource>
+              <span class="card-index">04 / ADVOCACY</span>
+              <h3>Student Legal Aid</h3>
+              <p>Get free, confidential guidance on everyday legal questions from a student-focused legal service.</p>
+              <a class="learn-more" href="#" aria-label="Learn more about Student Legal Aid">Learn more <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            </article>
+            <article class="resource-card" data-resource>
+              <span class="card-index">05 / FAMILY</span>
+              <h3>Childcare Support</h3>
+              <p>Explore free campus childcare options and support for balancing school with caring for family.</p>
+              <a class="learn-more" href="#" aria-label="Learn more about Childcare Support">Learn more <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            </article>
+            <article class="resource-card" data-resource>
+              <span class="card-index">06 / URGENT NEEDS</span>
+              <h3>Emergency Housing</h3>
+              <p>Find free short-term housing help and a person who can talk through your immediate next steps.</p>
+              <a class="learn-more" href="#" aria-label="Learn more about Emergency Housing">Learn more <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            </article>
+          </div>
+
+          <div class="no-results" id="no-results" role="status">
+            <div class="no-results-mark" aria-hidden="true">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.3" stroke="currentColor" stroke-width="1.7"/><path d="m15.5 15.5 4.1 4.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+            <h3>No matching resources yet</h3>
+            <p>Try a different word, or clear your search to see every campus resource.</p>
+          </div>
+
+          <aside class="support-note">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-3.7 7-10V5l-7-2-7 2v6c0 6.3 7 10 7 10Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span><strong>Your wellbeing matters.</strong> Reaching out is a strong first step. Campus support teams are here to help you work out what comes next.</span>
+          </aside>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span>Campus Help Finder</span>
+        <span>Support is for every student. You belong here.</span>
+      </footer>
+    </div>
+    <script>
+      (() => {
+        const search = document.getElementById("resource-search");
+        const cards = Array.from(document.querySelectorAll("[data-resource]"));
+        const count = document.getElementById("visible-count");
+        const emptyState = document.getElementById("no-results");
+        const clearButton = document.querySelector(".clear-search");
+        function filterResources() {
+          const query = search.value.trim().toLocaleLowerCase();
+          let visible = 0;
+          cards.forEach((card) => {
+            const matches = card.textContent.toLocaleLowerCase().includes(query);
+            card.hidden = !matches;
+            if (matches) visible += 1;
+          });
+          count.textContent = String(visible);
+          emptyState.classList.toggle("visible", visible === 0);
+          clearButton.classList.toggle("visible", search.value.length > 0);
+          document.querySelector(".resource-count").lastChild.textContent = visible === 1 ? " resource" : " resources";
+        }
+
+        search.addEventListener("input", filterResources);
+        clearButton.addEventListener("click", () => {
+          search.value = "";
+          filterResources();
+          search.focus();
+        });
+        document.querySelectorAll(".learn-more").forEach((link) => {
+          link.addEventListener("click", (event) => event.preventDefault());
+        });
+        document.querySelector(".brand").addEventListener("click", (event) => event.preventDefault());
+        filterResources();
+      })();
+    </script>
+  </body>
+</html>
